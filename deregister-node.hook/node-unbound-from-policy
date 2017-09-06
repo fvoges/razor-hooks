@@ -40,12 +40,12 @@ def deactivate_node(certname)
     :version => 3,
     :payload => {
       :certname           => certname,
-      :producer_timestamp => Time.now.strftime("%Y-%m-%d")
+      :producer_timestamp => Time.now.strftime("%Y-%m-%d %H:%M:%S")
     }
   }
 
   http = Net::HTTP.new(PUPPETDB_HOST, PUPPETDB_PORT)
-  http.set_debug_output($stdout)
+  # http.set_debug_output($stdout)
   http.use_ssl = true
   http.cert = OpenSSL::X509::Certificate.new(File.read(CLIENT_CERT))
   http.key  = OpenSSL::PKey::RSA.new(File.read(CLIENT_KEY))
