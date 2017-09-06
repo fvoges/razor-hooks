@@ -60,6 +60,13 @@ def deactivate_node(certname)
   check_res(res, certname)
   rescue => e
     $log.error "failed #{e} (#{certname})"
+    output = {
+      'error' => {
+        'message' => "failed #{e} (#{certname})",
+      }
+    }
+    puts output.to_json
+    exit 1
 end
 
 # Decommission a node:
@@ -87,6 +94,13 @@ def revoke_cert(certname)
   check_res(res, certname)
   rescue => e
     $log.error "failed #{e} (#{certname})"
+    output = {
+      'error' => {
+        'message' => "failed #{e} (#{certname})",
+      }
+    }
+    puts output.to_json
+    exit 1
 end
 
 # DELETE /puppet-ca/v1/certificate_status/<certname>?environment=<env>
@@ -100,7 +114,7 @@ def delete_cert(certname)
   http = Net::HTTP.new(CA_HOST, CA_PORT)
   http.use_ssl = true
   http.cert = OpenSSL::X509::Certificate.new(File.read(CLIENT_CERT))
-  http.key  = OpenSSL::PKey::RSA.new(File.read(CLIEN_TKEY))
+  http.key  = OpenSSL::PKey::RSA.new(File.read(CLIENT_KEY))
   http.ca_file = CA_CERT
   http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
@@ -111,6 +125,13 @@ def delete_cert(certname)
   check_res(res, certname)
   rescue => e
     $log.error "failed #{e} (#{certname})"
+    output = {
+      'error' => {
+        'message' => "failed #{e} (#{certname})",
+      }
+    }
+    puts output.to_json
+    exit 1
 end
 
 def check_res(res, certname)
