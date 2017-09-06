@@ -1,37 +1,20 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 
-#puppet_enterprise::profile::puppetdb::whitelisted_certnames: [""]
-
 require 'net/https'
 require 'json'
 require 'puppet'
 require 'syslog/logger'
-require 'pp'
 
 $log = Syslog::Logger.new 'razor-hook'
 
-
 input = STDIN.read
 STDIN.close_read
-File.write('/tmp/hook.log', input)
+# File.write('/tmp/hook.log', input)
 
-input = JSON.parse(input)
-config = input['hook']['configuration']
-#policy = input['policy']['name']
-node = input['node']
+input    = JSON.parse(input)
+config   = input['hook']['configuration']
+node     = input['node']
 certname = node.has_key?('metadata') && node['metadata'].has_key?('hostname') ? node['metadata']['hostname'] : node['hostname']
-#certname = 'mysqldb15.vm'
-
-#Puppet.initialize_settings
-
-#CA_CERT       = Puppet.settings['localcacert']
-#CA_HOST       = Puppet.settings['ca_server']
-#CA_PORT       = Puppet.settings['ca_port']
-#CLIENT_CERT   = Puppet.settings['hostcert']
-#CLIENT_KEY    = Puppet.settings['hostprivkey']
-# HACK: This assumes that it's a monolithic install
-#PUPPETDB_HOST = Puppet.settings['server']
-#PUPPETDB_PORT = '8081'
 
 CA_CERT       = config['ca_cert']
 CA_HOST       = config['ca_server']
@@ -47,7 +30,7 @@ PUPPETDB_PORT = config['puppetdb_port']
 #   -H "Content-Type: application/json" \
 #   -d '{"command":"deactivate node","version":3,"payload":{"certname":"test1","producer_timestamp":"2015-01-01"}}' \
 #   http://localhost:8080/pdb/cmd/v1
-
+#
 def deactivate_node(certname)
   $log.info "deactivating node #{certname}"
 
@@ -82,9 +65,7 @@ end
 # Decommission a node:
 # PUT /puppet-ca/v1/certificate_status/<certname>?environment=<env>
 # payload: {"desired_state":"revoked"}
-# DELETE /puppet-ca/v1/certificate_status/<certname>?environment=<env>
-# Access configured in PE Certificate Authority node group.
-
+#
 def revoke_cert(certname)
   $log.info "revoking cert for node #{certname}"
 
@@ -108,7 +89,9 @@ def revoke_cert(certname)
     $log.error "failed #{e} (#{certname})"
 end
 
-
+# DELETE /puppet-ca/v1/certificate_status/<certname>?environment=<env>
+# Access configured in PE Certificate Authority node group.
+#
 def delete_cert(certname)
   $log.info "deleting cert for node #{certname}"
 
@@ -149,8 +132,8 @@ end
 $log.info "cleaning node #{certname}"
 
 deactivate_node(certname)
-#revoke_cert(certname)
-#delete_cert(certname)
+revoke_cert(certname)
+delete_cert(certname)
 
 $log.info "cleaning node #{certname} completed"
 
