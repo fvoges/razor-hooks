@@ -63,8 +63,8 @@ YOUR_CA_HOSTNAME=$(puppet config print ca_server)    # in most cases this is the
 YOUR_PUPPETDB_HOSTNAME=$(puppet config print server) # this assumes a monolithic install
 
 razor create-hook --hook-type deregister-node --name deregister-node \
-  --config ca_server=$YOUR_CA_HOSTNAME \
-  --config puppetdb_server $YOUR_PUPPETDB_HOSTNAME
+  --configuration ca_server=$YOUR_CA_HOSTNAME \
+  --configuration puppetdb_server $YOUR_PUPPETDB_HOSTNAME
 ```
 
 The hook supports several configuration options, see `configuration.yaml` for the list of configuration parameters
