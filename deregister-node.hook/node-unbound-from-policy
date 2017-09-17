@@ -3,6 +3,7 @@
 require 'net/https'
 require 'json'
 require 'puppet'
+require 'time'
 require 'syslog/logger'
 
 $log = Syslog::Logger.new 'razor-hook'
@@ -40,7 +41,7 @@ def deactivate_node(certname)
     :version => 3,
     :payload => {
       :certname           => certname,
-      :producer_timestamp => Time.now.strftime("%Y-%m-%d %H:%M:%S")
+      :producer_timestamp => Time.now.iso8601(3)
     }
   }
 
